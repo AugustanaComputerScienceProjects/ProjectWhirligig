@@ -1,3 +1,9 @@
+# Don't store our video files in the repo!
+*.mp4
+*.MP4
+*.avi
+*.AVI
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
