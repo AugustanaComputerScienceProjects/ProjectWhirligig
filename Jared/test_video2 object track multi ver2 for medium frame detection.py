@@ -22,7 +22,7 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
     return image
 
 
-cap = cv2.VideoCapture(r"H:\Project Whiriligig\opencvtesting\medium5.mp4")
+cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
 
 
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
@@ -44,7 +44,7 @@ while(1):
     dst = cv2.dilate(dst,None)
 
     # Threshold for an optimal value, it may vary depending on the image.
-    frame[dst>0.05*dst.max()]=[0,0,255]
+    frame[dst>0.0005*dst.max()]=[0,0,255]
     
     #cv2.imshow('dst',frame)
     
@@ -82,7 +82,7 @@ while(1):
         #center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
  
         # only proceed if the radius meets a minimum size
-        if radius > 0 and radius <40:
+        if radius > 5 and radius <20:
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
             cv2.circle(frame, (int(x), int(y)), int(radius),
@@ -109,7 +109,7 @@ while(1):
     
     out.write(frame)
     cv2.imshow("Frame", frame)
-    k = cv2.waitKey(1) & 0xFF
+    k = cv2.waitKey(100000) & 0xFF
     if k == 27:  # esc key
         break
 

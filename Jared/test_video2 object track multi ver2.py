@@ -9,15 +9,15 @@ import cv2
 # define the lower and upper boundaries of the 
 # whirligig beetles (using the HSV color space)
 lower_hsv_threshold = np.array([0,0,0])
-upper_hsv_threshold = np.array([200,200,47])
+upper_hsv_threshold = np.array([255,255,50])
 
 # then initialize the
 # list of tracked points
-BUFFER_SIZE = 125
+BUFFER_SIZE = 0
 pts = deque(maxlen=BUFFER_SIZE)
  
 #camera = cv2.VideoCapture("C:/Users/jaredhaeme15/Downloads/Moving Ball.mp4")
-camera = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4")
+camera = cv2.VideoCapture(r"H:\Project Whiriligig\opencvtesting\medium2.mp4")
 
 
 while True:
@@ -31,22 +31,47 @@ while True:
     # resize the frame, blur it, and convert it to the HSV
     # color space
     #frame = imutils.resize(frame, width=600)
-    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+    # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
     # construct a mask for the color "green", then perform
     # a series of dilations and erosions to remove any small
     # blobs left in the mask
     mask = cv2.inRange(hsv, lower_hsv_threshold, upper_hsv_threshold)
-    mask2 = cv2.erode(mask, None, iterations=1)
-    mask3 = cv2.dilate(mask2, None, iterations=6)
-
+    mask2 = cv2.erode(mask, None, iterations=2)
+    mask3 = cv2.dilate(mask2, None, iterations=2)
+   
+    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+    cv2.imshow('thresh',thresh)
+    # noise removal
+    kernel = np.ones((3,3),np.uint8)
+    opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 2)
+    sure_bg = cv2.dilate(opening,kernel,iterations=5)
+    cv2.imshow('sure_bg' ,sure_bg)
+    # Finding sure foreground area
+    dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
+    ret, sure_fg = cv2.threshold(dist_transform,0.01*dist_transform.max(),255,0)
+    cv2.imshow('sure_fg' ,sure_fg)
+    # Finding unknown region
+    sure_fg = np.uint8(sure_fg)
+    cv2.imshow('sure_fg' ,sure_fg)
+    unknown = cv2.subtract(sure_bg,sure_fg)
+    cv2.imshow('unknown', unknown)
+    # Marker labelling
+    ret, markers = cv2.connectedComponents(sure_fg)
+    cv2.imshow('markers', markers)
  
     # find contours in the mask and initialize the current
     # (x, y) center of the ball
-    cnts = cv2.findContours(mask3.copy(), cv2.RETR_EXTERNAL,
+    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
     center = None
+    
+    cnts1 = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)[-2]
+    center = None
+    
     
     #frame=cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -57,7 +82,7 @@ while True:
         #center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
  
         # only proceed if the radius meets a minimum size
-        if radius > 10 and radius <40:
+        if radius < 15 and radius >5:
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
             cv2.circle(frame, (int(x), int(y)), int(radius),
@@ -78,17 +103,17 @@ while True:
         # draw the connecting lines
         #thickness = int(np.sqrt(BUFFER_SIZE / float(i + 1)) * 2.5)
         thickness = int(np.sqrt(BUFFER_SIZE - i) / 3 + 2)
-        #cv2.circle(frame, pts[i], thickness, (0, 0, 255), -1)
+        cv2.circle(frame, pts[i], thickness, (0, 0, 255), -1)
 
         #cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
  
     # show the frame to our screen
     cv2.imshow("Frame", frame)
-    cv2.imshow("Mask", mask)
-    cv2.imshow("Mask2", mask2)
-    cv2.imshow("Mask3", mask3)
+    #cv2.imshow("Mask", mask)
+    #cv2.imshow("Mask2", mask2)
+    #cv2.imshow("Mask3", mask3)
     
-    key = cv2.waitKey(1) & 0xFF
+    key = cv2.waitKey(10000) & 0xFF
  
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):

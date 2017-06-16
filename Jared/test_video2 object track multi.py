@@ -17,7 +17,7 @@ BUFFER_SIZE = 125
 pts = deque(maxlen=BUFFER_SIZE)
  
 #camera = cv2.VideoCapture("C:/Users/jaredhaeme15/Downloads/Moving Ball.mp4")
-camera = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4")
+camera = cv2.VideoCapture(r"H:\Project Whiriligig\opencvtesting\large1.mp4")
 
 
 while True:
@@ -88,7 +88,7 @@ while True:
     cv2.imshow("Mask2", mask2)
     cv2.imshow("Mask3", mask3)
     
-    key = cv2.waitKey(1) & 0xFF
+    key = cv2.waitKey(100000) & 0xFF
  
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
