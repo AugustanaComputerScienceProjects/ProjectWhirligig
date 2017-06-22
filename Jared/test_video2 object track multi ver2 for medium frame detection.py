@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 from collections import deque
 
+frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4"
+textFileName = frameFileName.replace('.mp4', '') + '.txt'
 
 def create_blank(width, height, rgb_color=(0, 0, 0)):
     """Create new image(numpy array) filled with certain color in RGB"""
@@ -21,8 +23,8 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
 
     return image
 
-
-cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium1.mp4")
+loc=[]
+cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
 
 
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
@@ -77,21 +79,30 @@ while(1):
     #frame=cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
     # process each contour in our contour list
-    for c in cnts:
-        ((x, y), radius) = cv2.minEnclosingCircle(c)
-        #M = cv2.moments(c)
-        #center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+    with open(textFileName, 'w') as fout:
+        count = 0
+        for c in cnts:
+            ((x, y), radius) = cv2.minEnclosingCircle(c)
+            M = cv2.moments(c)
+            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
  
-        # only proceed if the radius meets a minimum size
-        if radius > 5 and radius <30:
-            # draw the circle and centroid on the frame,
-            # then update the list of tracked points
-            cv2.circle(frame, (int(x), int(y)), int(radius),
-                    (0, 255, 255), 2)
-            #cv2.circle(frame, center, 5, (0, 0, 255), -1)
+            # only proceed if the radius meets a minimum size
+            if radius > 5 and radius <30:
+                x=center[0]
+                y=center[1]
+                fout.write(str(x) + ' ' + str(y) + '\n')
+                # draw the circle and centroid on the frame,
+                # then update the list of tracked points
+                #cv2.circle(frame, (int(x), int(y)), int(radius),
+                    #(0, 255, 255), 2)
+                cv2.circle(frame, center, 5, (0, 255, 255), -1)
  
-            # update the points queue
-            pts.appendleft(center)
+                # update the points queue
+                loc.append(center)
+                count += 1
+    print (loc)        
+    print ("Beetle number: "+str(len(loc)))
+    del loc[:]
 
     # loop over the set of tracked points
     for i in np.arange(0, len(pts)):
@@ -110,7 +121,7 @@ while(1):
     
     out.write(frame)
     cv2.imshow("Frame", frame)
-    k = cv2.waitKey(10000) & 0xFF
+    k = cv2.waitKey(10000000) & 0xFF
     if k == 27:  # esc key
         break
 

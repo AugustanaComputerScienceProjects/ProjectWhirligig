@@ -12,13 +12,14 @@ lower_hsv_threshold = np.array([0,0,0])
 upper_hsv_threshold = np.array([200,200,47])
 
 
-
+frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4"
 # then initialize the
 # list of tracked points
 BUFFER_SIZE =75
  
 pts = deque(maxlen=BUFFER_SIZE)
 loc=[]
+textFileName = frameFileName.replace('.mp4', '') + '.txt'
 
 (dX, dY) = (0, 0)
 
@@ -57,25 +58,33 @@ while True:
     #frame=cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
     # process each contour in our contour list
-    count = 0
-    for c in cnts:
-        ((x, y), radius) = cv2.minEnclosingCircle(c)
-        M = cv2.moments(c)
-        center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+    with open(textFileName, 'w') as fout:
+        count = 0
+        for c in cnts:
+            ((x, y), radius) = cv2.minEnclosingCircle(c)
+            M = cv2.moments(c)
+            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+        
+        
  
         # only proceed if the radius meets a minimum size
-        if radius > 10 and radius <40:
+            if radius > 10 and radius <40:
+                x=center[0]
+                y=center[1]
             
+                fout.write(str(x) + ' ' + str(y) + '\n')
+            
+                print (x, y)
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
             #cv2.circle(frame, (int(x), int(y)), int(radius),
                    # (0, 255, 255), 2)
-            cv2.circle(frame, center, 5, (0, 0, 255), -1)
+                cv2.circle(frame, center, 5, (0, 0, 255), -1)
             #print (str(count)+"."+str(center))
             # update the points queue
             #pts.appendleft(center)
-            loc.append(center)
-            count += 1
+                loc.append(center)
+                count += 1
             
     print (loc)        
     print ("Beetle number: "+str(len(loc)))
@@ -87,9 +96,9 @@ while True:
     cv2.imshow("Frame", frame)
     #cv2.imshow("Mask", mask)
     #cv2.imshow("Mask2", mask2)
-    #cv2.imshow("Mask3", mask3)
+    cv2.imshow("Mask3", mask3)
     
-    key = cv2.waitKey(1) & 0xFF
+    key = cv2.waitKey(1000000) & 0xFF
  
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
