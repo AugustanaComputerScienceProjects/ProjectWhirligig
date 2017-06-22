@@ -110,7 +110,7 @@ while(1):
     
     out.write(frame)
     cv2.imshow("Frame", frame)
-    k = cv2.waitKey(1) & 0xFF
+    k = cv2.waitKey(10000) & 0xFF
     if k == 27:  # esc key
         break
 
