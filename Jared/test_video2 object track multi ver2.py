@@ -2,7 +2,6 @@
 # import the necessary packages
 from collections import deque
 import numpy as np
-import argparse
 import cv2
  
 
@@ -109,9 +108,9 @@ while True:
  
     # show the frame to our screen
     cv2.imshow("Frame", frame)
-    #cv2.imshow("Mask", mask)
-    #cv2.imshow("Mask2", mask2)
-    #cv2.imshow("Mask3", mask3)
+    cv2.imshow("Mask", mask)
+    cv2.imshow("Mask2", mask2)
+    cv2.imshow("Mask3", mask3)
     
     key = cv2.waitKey(10000) & 0xFF
  

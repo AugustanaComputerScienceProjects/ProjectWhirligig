@@ -71,10 +71,12 @@ while True:
             if radius > 10 and radius <40:
                 x=center[0]
                 y=center[1]
-            
+                #rect = cv2.minAreaRect(c)
+                #box = cv2.boxPoints(rect)
+                #box = np.int0(box)
+                #cv2.drawContours(frame,[box],0,(0,0,255),2)
                 fout.write(str(x) + ' ' + str(y) + '\n')
             
-                print (x, y)
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
             #cv2.circle(frame, (int(x), int(y)), int(radius),
@@ -98,7 +100,7 @@ while True:
     #cv2.imshow("Mask2", mask2)
     cv2.imshow("Mask3", mask3)
     
-    key = cv2.waitKey(1000000) & 0xFF
+    key = cv2.waitKey(1) & 0xFF
  
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
