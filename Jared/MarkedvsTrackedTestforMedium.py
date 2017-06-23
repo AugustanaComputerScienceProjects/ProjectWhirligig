@@ -33,16 +33,14 @@ for xm, ym in markedCoord:
             trackedMatched.append((xt, yt))
             
 for i in markedMatched:
-    markedMatched.count(i)
     if markedMatched.count(i)>1:
         sameBugTrackedMoreThanOnce+=1
 
 for i in trackedMatched:
-    trackedMatched.count(i)
     if trackedMatched.count(i)>1:
         groupTrackedasOne+=1
-markedNotMatched=list(set(markedMatched)^set(markedCoord))
-trackedMatchedNotMatched=list(set(trackedMatched)^set(videoTrackedCoord))
+markedNotMatched=list(set(markedCoord) - set(markedMatched))
+trackedMatchedNotMatched=list(set(videoTrackedCoord) - set(trackedMatched))
 falseNeg=len(markedNotMatched)
 falsePos=len(trackedMatchedNotMatched)
 
