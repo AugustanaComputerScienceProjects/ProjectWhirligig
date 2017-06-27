@@ -43,15 +43,21 @@ def compareMarkedAndTrackedFrames(trackedCoordFile, markedCoordFile,
             bestMatches.append((xm,ym,xt,yt))
 
 
-                
+    bugsTrackedMultiple = []
     for pt in markedMatched:
         if markedMatched.count(pt)>1:
             sameBugTrackedMoreThanOnce+=1
+            bugsTrackedMultiple.append(pt)
     
+    print("btm: ", bugsTrackedMultiple)
+    print("set:", set(bugsTrackedMultiple))
+    
+    bugsTrackedasOne=[]
     for pt in trackedMatched:
         if trackedMatched.count(pt)>1:
             groupTrackedasOne+=1
-    
+            bugsTrackedasOne.append(pt)
+            
     markedNotMatched=list(set(markedCoord) - set(markedMatched))
     trackedMatchedNotMatched=list(set(videoTrackedCoord) - set(trackedMatched))
     falseNeg=len(markedNotMatched)
@@ -74,6 +80,9 @@ def compareMarkedAndTrackedFrames(trackedCoordFile, markedCoordFile,
     for xm,ym,xt,yt in bestMatches:
         plt.plot([xm,xt],[ym,yt], 'g-')
     
+    for x,y in set(bugsTrackedMultiple):
+        plt.scatter([x],[y], c='m', marker='v')
+    
     plt.show()
 
 
@@ -85,4 +94,9 @@ def compareMarkedAndTrackedFrames(trackedCoordFile, markedCoordFile,
 compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.txt",
                               r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\marked_frames\medium5_frame0001_markedHH.txt",
                               r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/medium5_frame0001.png",
-                              10)
+                              6)
+
+compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5MultipleMethods.txt",
+                              r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\marked_frames\medium5_frame0001_markedHH.txt",
+                              r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/medium5_frame0001.png",
+                              6)
