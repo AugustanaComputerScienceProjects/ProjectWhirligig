@@ -38,7 +38,7 @@ while True:
     # resize the frame, blur it, and convert it to the HSV
     # color space
     
-    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+   
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     # construct a mask for the color "green", then perform
     # a series of dilations and erosions to remove any small
@@ -99,7 +99,7 @@ while True:
     #cv2.imshow("Mask2", mask2)
     cv2.imshow("Mask3", mask3)
     
-    key = cv2.waitKey(100000000) & 0xFF
+    key = cv2.waitKey(10000) & 0xFF
  
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):

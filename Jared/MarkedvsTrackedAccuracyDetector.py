@@ -86,10 +86,10 @@ def compareMarkedAndTrackedFrames(trackedCoordFile, markedCoordFile,
     plt.show()
 
 
-#compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.txt",
-#                              r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\marked_frames\large1_frame0001_markedJH.txt",
-#                              r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame0001.png",
-#                              15)
+compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.txt",
+                              r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\marked_frames\large1_frame0001_markedJH.txt",
+                              r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame0001.png",
+                              15)
 
 compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.txt",
                               r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\marked_frames\medium5_frame0001_markedHH.txt",
