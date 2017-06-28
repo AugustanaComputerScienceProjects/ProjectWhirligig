@@ -8,7 +8,6 @@ import cv2
 import numpy as np
 from collections import deque
 import imutils
-
 import misc_image_tools 
 
 
@@ -16,46 +15,16 @@ frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\m
 textFileName = frameFileName.replace('.mp4', '') + 'MultipleMethods.txt'
 
 
-# then initialize the
-# list of tracked points
 
-
-def find_beetles_in_group(cnt):
-    #gray = cv2.cvtColor(cnt,cv2.COLOR_BGR2GRAY)
-   
-    kernel = np.ones((3,3),np.uint8)
-    opening = cv2.morphologyEx(cnt,cv2.MORPH_OPEN,kernel, iterations = 2)
-
-    # sure background area
-    sure_bg = cv2.dilate(opening,kernel,iterations=3)
-
-    # Finding sure foreground area
-    dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
-    ret, sure_fg = cv2.threshold(dist_transform,0.01*dist_transform.max(),255,0)
-
-    # Finding unknown region
-    sure_fg = np.uint8(sure_fg)
-    unknown = cv2.subtract(sure_bg,sure_fg)
-    # Marker labelling
-    ret, markers = cv2.connectedComponents(sure_fg)
-
-    # Add one to all labels so that sure background is not 0, but 1
-    markers = markers+1
-
-    # Now, mark the region of unknown with zero
-    markers[unknown==255] = 0
-    markers = cv2.watershed(cnt,markers)
-    m = cv2.convertScaleAbs(markers)
-    ret,thresh = cv2.threshold(m,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE)[-2]
-    
-    return cnts
 def find_beetles_by_color(frame):
     locthresh=[]
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    
+    closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations = 3)
+    cv2.imshow("close", closing)
+    #erode = cv2.erode(closing, kernel, iterations = 2)
+    #cv2.imshow("erode", erode)
     # find contours in the mask and initialize the current
     # (x, y) center of the ball
     cntsthresh = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
@@ -64,10 +33,6 @@ def find_beetles_by_color(frame):
     for c in cntsthresh:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
         if radius > 5 and radius <40:
-            if radius > 15:
-                for ct in find_beetles_in_group(c):
-                    ((x, y), radius) = cv2.minEnclosingCircle(ct)
-                    locthresh.append((x,y))
             locthresh.append((x,y))
     return locthresh
 
@@ -93,9 +58,7 @@ def find_beetles_by_corners(frame):
      # process each contour in our contour list
     for c in cntscr:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
-       
         if radius > 0 and radius <30:
-            #if radius > 15: 
             loccr.append((x,y))
     return loccr
 
