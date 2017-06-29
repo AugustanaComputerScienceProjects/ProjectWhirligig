@@ -29,7 +29,7 @@ def splitMultipleBeetles(maskImage, bigContour):
         cnt += np.array([x,y])
     return cnts
     
-def find_beetles_by_color(frame):
+def find_beetles_by_threshold(frame):
     locthresh=[]
     #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     #mask = cv2.inRange(hsv, np.array([0,0,0]), np.array([200,200,47]))
@@ -87,40 +87,45 @@ def find_beetles_by_corners(frame):
             loccr.append((x,y))
     return loccr
 
-def matches(xm, ym, xt, yt):
-    return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
-
-
-
-cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
-
-while(1): 
+def find_beetles_combined(frame):
     matched=[]
-    successFlag, frame = cap.read()
-    if not successFlag:
-        cv2.waitKey(0)
-        break 
-    locthresh=find_beetles_by_color(frame)
+    locthresh=find_beetles_by_threshold(frame)
     loccr=find_beetles_by_corners(frame)
     for xm, ym in locthresh:
         for xt, yt in loccr:
             if matches(xm, ym, xt, yt):
                 matched.append((xm,ym))
+#    print ("Corner detect length:"+ str(len(loccr)))
+#    print ("Thresh detect length:" +str(len(locthresh)))
+    return matched
 
-    print ("Matched length:"+str(len(set(matched))))
-    print ("Corner detect length:"+ str(len(loccr)))
-    print ("Thresh detect length:" +str(len(locthresh)))
-    with open(textFileName, 'w') as fout:
-        for x,y in set(matched):
-        # draw a circle at each x,y that matched using cv2.circle
-            cv2.circle(frame, (int (x),int (y)), 5, (0, 255, 255), -1)
-            fout.write(str(x) + ' ' + str(y) + '\n')
+def matches(xm, ym, xt, yt):
+    return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
 
-    frame = imutils.resize(frame, width=1000, height=800)
-    cv2.imshow("Frame", frame)
-    k = cv2.waitKey(1) & 0xFF
-    if k == 27:  # esc key
-        break
-cv2.destroyAllWindows()
-cap.release()
-
+if __name__ == '__main__':
+    cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
+    
+    while(1): 
+       
+        successFlag, frame = cap.read()
+        if not successFlag:
+            cv2.waitKey(0)
+            break 
+        matched=find_beetles_combined(frame)
+        
+        print ("Matched length:"+str(len(set(matched))))
+        
+        with open(textFileName, 'w') as fout:
+            for x,y in set(matched):
+            # draw a circle at each x,y that matched using cv2.circle
+                cv2.circle(frame, (int (x),int (y)), 5, (0, 255, 255), -1)
+                fout.write(str(x) + ' ' + str(y) + '\n')
+    
+        frame = imutils.resize(frame, width=1000, height=800)
+        cv2.imshow("Frame", frame)
+        k = cv2.waitKey(1) & 0xFF
+        if k == 27:  # esc key
+            break
+    cv2.destroyAllWindows()
+    cap.release()
+    
