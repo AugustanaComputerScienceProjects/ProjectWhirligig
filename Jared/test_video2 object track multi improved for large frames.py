@@ -5,6 +5,10 @@ import numpy as np
 import cv2
 import imutils
  
+def distanceSquared(pt1, pt2):
+    x1,y1=pt1
+    x2,y2=pt2
+    return (x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)
 
 # define the lower and upper boundaries of the 
 # whirligig beetles (using the HSV color space)
@@ -15,12 +19,11 @@ upper_hsv_threshold = np.array([200,200,47])
 frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4"
 # then initialize the
 # list of tracked points
-
-loc=[]
 textFileName = frameFileName.replace('.mp4', '') + '.txt'
 camera = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4")
-
+beetle={}
 while True:
+    currentloc=[]
     # grab the current frame
     (grabbed, frame) = camera.read()
     
@@ -39,7 +42,6 @@ while True:
     cv2.imshow('Edges',edges)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
     mask = cv2.inRange(hsv, lower_hsv_threshold, upper_hsv_threshold)
-    
     mask2 = cv2.erode(mask, kernel, iterations=1)
     mask3 = cv2.dilate(mask2, kernel, iterations=6)
 
@@ -48,7 +50,7 @@ while True:
     # (x, y) center of the ball
     cnts = cv2.findContours(mask3.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
-    center = None
+    #center = None
     
     #frame=cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -79,12 +81,18 @@ while True:
             #print (str(count)+"."+str(center))
             # update the points queue
             #pts.appendleft(center)
-                loc.append(center)
+                currentloc.append((x,y))
                 count += 1
             
     #print (loc)        
     #print ("Beetle number: "+str(len(loc)))
-    del loc[:]
+    previousloc=currentloc.copy()
+    velocity=set(currentloc)-set(previousloc)
+    predicted=set(currentloc)+set(velocity)
+    for c in currentloc:
+        min(predicted, key=lambda pt: distanceSquared(pt,c))
+        
+    print (previousloc)
     
     
     # show the frame to our screen
