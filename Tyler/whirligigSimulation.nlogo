@@ -1,11 +1,10 @@
 globals[
-  magnitude
-  density
   radius
 ]
 breed[beetles beetle]
 breed[food a-food]
-beetles-own[ hunger]
+
+beetles-own[ hunger speed ]
 
 
 
@@ -15,14 +14,14 @@ to setup
   setup-beetles
   setup-food
   reset-ticks
-  set magnitude 1
-  set radius world-width
 
 end
 
 to go
   stream
   move-beetles
+  display-labels
+
   add-food
 
   tick
@@ -31,42 +30,47 @@ end
 
 to move-beetles
   ask beetles[
+    if (speed > 1) [ set speed speed - 2 ]
+    if (speed < 1) [ set speed 1 ]
+;    set speed 1
 
+    if hunger > 100 [ set speed speed + 1 ]
+    if (scared?)[ set speed speed + 5 ]
+    if speed > 5 [ set speed 5 ]
 
-           if hunger > 100 [set radius world-width * 2 ]
+    if (count beetles in-cone 6 120) < 3 [ right (random 91 - 45) ]
 
-           set density sum [count turtles-here] of neighbors
-           if(density > 2)[ scare]
-           ifelse patch-ahead 1 != nobody and not any? beetles-on patch-ahead 1 [
-           forward 0.1 * magnitude
-           ]
+    ifelse patch-ahead 1 != nobody and not any? beetles-on patch-ahead 1 [
+      forward dt * speed
+   ]
     [
-      let randx random radius - radius / 2
-      let randy random radius - radius / 2
-      facexy randx randy
- ;      rt (random 180 - 90)
-     ]
+        rt (random 91 - 45)
+    ]
 
-     set magnitude 1
-     set hunger hunger + 1
-     set radius world-width
-      eat-food
-
+    set hunger hunger + dt * 1
+    if hunger > 0 [eat-food]
   ]
 end
-to stream
-  ask turtles[ if stream?
 
-    [if(patch-ahead 1 != nobody and not any? beetles-on patch-ahead 1
-               and patch-left-and-ahead 45 1 != nobody and not any? beetles-on patch-left-and-ahead 45 1
-               and patch-right-and-ahead 45 1 != nobody and not any? beetles-on patch-right-and-ahead 45 1
-               and patch-left-and-ahead 90 1 != nobody and not any? beetles-on patch-left-and-ahead 90 1
-               and patch-left-and-ahead 135 1 != nobody and not any? beetles-on patch-left-and-ahead 135 1
-               and patch-right-and-ahead 90 1 != nobody and not any? beetles-on patch-right-and-ahead 90 1
-               and patch-right-and-ahead 135 1 != nobody and not any? beetles-on patch-right-and-ahead 135 1
-               and patch-right-and-ahead 180 1 != nobody and not any? beetles-on patch-right-and-ahead 180 1)
-    [setxy xcor ycor + .08]
-  ]
+to-report scared?
+  let density sum [count turtles-here] of neighbors
+  report density >= 2
+end
+
+to stream
+  if stream?[
+    ask turtles [
+;      if(patch-ahead 1 != nobody and not any? beetles-on patch-ahead 1
+;               and patch-left-and-ahead 45 1 != nobody and not any? beetles-on patch-left-and-ahead 45 1
+;               and patch-right-and-ahead 45 1 != nobody and not any? beetles-on patch-right-and-ahead 45 1
+;               and patch-left-and-ahead 90 1 != nobody and not any? beetles-on patch-left-and-ahead 90 1
+;               and patch-left-and-ahead 135 1 != nobody and not any? beetles-on patch-left-and-ahead 135 1
+;               and patch-right-and-ahead 90 1 != nobody and not any? beetles-on patch-right-and-ahead 90 1
+;               and patch-right-and-ahead 135 1 != nobody and not any? beetles-on patch-right-and-ahead 135 1
+;               and patch-right-and-ahead 180 1 != nobody and not any? beetles-on patch-right-and-ahead 180 1)
+;        [setxy xcor ycor + .08]
+        setxy xcor ycor + .8 * dt
+    ]
   ]
 end
 
@@ -76,27 +80,16 @@ to eat-food
     [ ask prey [ die ]
       set hunger hunger - beetle-gain-from-food
     ]
-    ifelse show-hunger?
-    [ set label hunger ]
-    [set label ""]
-
-end
-
-to scare
- set magnitude 10
 end
 
 
 to setup-beetles
-  create-beetles beetle-population
-
-  ask beetles [
+  create-beetles beetle-population [
 ;    set shape "beetle"
-    setxy random-xcor random-ycor
+    setxy random-xcor / 2 random-ycor / 2
     set color black
-    set hunger random 50
-    ]
-
+    set hunger (random 100)
+  ]
 end
 
 
@@ -105,40 +98,33 @@ to setup-patches
 end
 
 to display-labels
-  ask turtles [ set label ""]
   ifelse show-hunger?
-  [set label hunger]
-  [set label ""]
-
-  end
+  [ ask beetles [ set label (precision hunger 0)] ]
+  [ ask beetles [ set label ""     ] ]
+end
 
 to setup-food
-     create-food initial-food-amount
-  [
-    set color green
-    set label-color white
-    setxy random-xcor random-ycor
-  ]
+  repeat 100 [ add-food ]
 end
 
 to add-food
-  if random beetle-population / 5 < 1
-  [ create-food 1
-    [
-    set color green
-    setxy random-xcor random-ycor
+  if random-float 100 < add-food-chance [
+    create-food 1 [
+      set color green
+      set shape "circle"
+      set size 0.5
+      setxy random-xcor random-ycor
     ]
   ]
-
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-629
-450
-16
-16
+728
+549
+20
+20
 12.4
 1
 10
@@ -146,13 +132,13 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
 1
--16
-16
--16
-16
+1
+1
+-20
+20
+-20
+20
 1
 1
 1
@@ -168,7 +154,7 @@ beetle-population
 beetle-population
 0
 100
-70
+100
 1
 1
 NIL
@@ -227,8 +213,8 @@ SLIDER
 beetle-gain-from-food
 beetle-gain-from-food
 0
-1000
-1000
+200
+50
 1
 1
 NIL
@@ -241,7 +227,7 @@ SWITCH
 253
 show-hunger?
 show-hunger?
-1
+0
 1
 -1000
 
@@ -250,27 +236,42 @@ SLIDER
 254
 194
 287
-initial-food-amount
-initial-food-amount
+add-food-chance
+add-food-chance
 0
+100
 10
-10
+0.1
 1
-1
-NIL
+%
 HORIZONTAL
 
 SLIDER
-22
-292
-194
-325
+18
+304
+190
+337
 vision
 vision
 0
 5
 2
 1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+21
+357
+193
+390
+dt
+dt
+0
+1
+0.1
+0.01
 1
 NIL
 HORIZONTAL
@@ -636,5 +637,5 @@ Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 
 @#$#@#$#@
-0
+1
 @#$#@#$#@
