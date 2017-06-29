@@ -15,17 +15,10 @@ upper_hsv_threshold = np.array([200,200,47])
 frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4"
 # then initialize the
 # list of tracked points
-BUFFER_SIZE =75
- 
-pts = deque(maxlen=BUFFER_SIZE)
+
 loc=[]
 textFileName = frameFileName.replace('.mp4', '') + '.txt'
-
-(dX, dY) = (0, 0)
-
-
 camera = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4")
-
 
 while True:
     # grab the current frame
@@ -38,14 +31,17 @@ while True:
     # resize the frame, blur it, and convert it to the HSV
     # color space
     
-    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     # construct a mask for the color "green", then perform
     # a series of dilations and erosions to remove any small
     # blobs left in the mask
+    edges = cv2.Canny(frame,100,200)
+    cv2.imshow('Edges',edges)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
     mask = cv2.inRange(hsv, lower_hsv_threshold, upper_hsv_threshold)
-    mask2 = cv2.erode(mask, None, iterations=1)
-    mask3 = cv2.dilate(mask2, None, iterations=6)
+    
+    mask2 = cv2.erode(mask, kernel, iterations=1)
+    mask3 = cv2.dilate(mask2, kernel, iterations=6)
 
  
     # find contours in the mask and initialize the current
@@ -61,15 +57,14 @@ while True:
         count = 0
         for c in cnts:
             ((x, y), radius) = cv2.minEnclosingCircle(c)
-            M = cv2.moments(c)
-            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            #M = cv2.moments(c)
+            #center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         
         
  
         # only proceed if the radius meets a minimum size
             if radius > 10 and radius < 40:
-                x=center[0]
-                y=center[1]
+                
                 #rect = cv2.minAreaRect(c)
                 #box = cv2.boxPoints(rect)
                 #box = np.int0(box)
@@ -80,7 +75,7 @@ while True:
             # then update the list of tracked points
             #cv2.circle(frame, (int(x), int(y)), int(radius),
                    # (0, 255, 255), 2)
-                cv2.circle(frame, center, 5, (0, 0, 255), -1)
+                cv2.circle(frame, (int (x), int (y)), 5, (0, 0, 255), -1)
             #print (str(count)+"."+str(center))
             # update the points queue
             #pts.appendleft(center)
@@ -95,11 +90,11 @@ while True:
     # show the frame to our screen
     frame = imutils.resize(frame, width=720, height=540)
     cv2.imshow("Frame", frame)
-    #cv2.imshow("Mask", mask)
+    cv2.imshow("Mask", mask)
     #cv2.imshow("Mask2", mask2)
     cv2.imshow("Mask3", mask3)
     
-    key = cv2.waitKey(100000000) & 0xFF
+    key = cv2.waitKey(1) & 0xFF
  
     # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
