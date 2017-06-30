@@ -38,13 +38,17 @@ to move-beetles
     if (scared?)[ set speed speed + 5 ]
     if speed > 5 [ set speed 5 ]
 
-    if (count beetles in-cone 6 120) < 3 [ right (random 91 - 45) ]
+    if (count beetles in-cone 6 120) < 3 [
+      right (random 91 - 45)
+      turn-towards 180 5
+      ]
 
     ifelse patch-ahead 1 != nobody and not any? beetles-on patch-ahead 1 [
       forward dt * speed
    ]
     [
         rt (random 91 - 45)
+      turn-towards 180 5
     ]
 
     set hunger hunger + dt * 1
@@ -85,7 +89,7 @@ end
 
 to setup-beetles
   create-beetles beetle-population [
-;    set shape "beetle"
+    set shape "bug"
     setxy random-xcor / 2 random-ycor / 2
     set color black
     set hunger (random 100)
@@ -115,6 +119,47 @@ to add-food
       set size 0.5
       setxy random-xcor random-ycor
     ]
+  ]
+end
+
+
+;;; HELPER PROCEDURES
+
+to turn-towards [new-heading max-turn]  ;; turtle procedure
+  turn-at-most (subtract-headings new-heading heading) max-turn
+end
+
+;to turn-away [new-heading max-turn]  ;; turtle procedure
+;  turn-at-most (subtract-headings heading new-heading) max-turn
+;end
+
+;; turn right by "turn" degrees (or left if "turn" is negative),
+;; but never turn more than "max-turn" degrees
+to turn-at-most [turn max-turn]  ;; turtle procedure
+  ifelse abs turn > max-turn
+    [ ifelse turn > 0
+        [ rt max-turn ]
+        [ lt max-turn ] ]
+    [ rt turn ]
+end
+
+to-report pad-zeros [ num desired-length ]
+  let s (word num)
+  while [length s < desired-length] [
+    set s (word "0" s)
+  ]
+  report s
+end
+
+
+to make-movie
+  let frameNum 0
+  setup
+  export-view (word "frames/frame_" (pad-zeros frameNum 3) ".png")
+  repeat 600 [
+    go
+    set frameNum frameNum + 1
+    export-view (word "frames/frame_" (pad-zeros frameNum 3) ".png")
   ]
 end
 @#$#@#$#@
@@ -227,7 +272,7 @@ SWITCH
 253
 show-hunger?
 show-hunger?
-0
+1
 1
 -1000
 
@@ -275,6 +320,23 @@ dt
 1
 NIL
 HORIZONTAL
+
+BUTTON
+70
+425
+167
+458
+NIL
+make-movie
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -327,6 +389,19 @@ arrow
 true
 0
 Polygon -7500403 true true 150 0 0 150 105 150 105 293 195 293 195 150 300 150
+
+beetle
+true
+0
+Polygon -7500403 true true 105 45 195 45 210 90 210 150 210 210 195 255 105 255 90 210 90 150 90 90
+Circle -7500403 true true 105 0 90
+Circle -7500403 true true 103 208 92
+Line -7500403 true 90 105 75 120
+Line -7500403 true 90 150 75 165
+Line -7500403 true 90 195 75 210
+Line -7500403 true 210 105 225 120
+Line -7500403 true 210 150 225 165
+Line -7500403 true 210 195 225 210
 
 box
 false
