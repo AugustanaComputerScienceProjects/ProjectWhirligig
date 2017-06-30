@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from collections import deque
-cap = cv2.VideoCapture(r"H:\Project Whiriligig\opencvtesting\medium2.mp4")
+cap = cv2.VideoCapture(r"H:\Project Whiriligig\medium2.mp4")
 
 ret, frame1 = cap.read()
 prvs = cv2.cvtColor(frame1,cv2.COLOR_BGR2GRAY)

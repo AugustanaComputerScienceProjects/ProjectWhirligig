@@ -7,7 +7,7 @@ This is a temporary script file.
 import cv2
 import numpy as np
 from collections import deque
-import imutils
+#import imutils
 import misc_image_tools 
 
 

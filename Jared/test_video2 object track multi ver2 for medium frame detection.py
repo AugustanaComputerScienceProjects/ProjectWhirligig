@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 from collections import deque
 
-frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4"
+frameFileName = r"H:/ProjectWhirligig/medium2.MP4"
 textFileName = frameFileName.replace('.mp4', '') + '.txt'
 
 def create_blank(width, height, rgb_color=(0, 0, 0)):
@@ -24,7 +24,7 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
     return image
 
 loc=[]
-cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
+cap = cv2.VideoCapture(r"H:/ProjectWhirligig/medium2.MP4")
 
 
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
