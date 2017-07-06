@@ -6,6 +6,23 @@ import MediumVideoSingleFrameDetection as md
 import LargeVideoSingleFrameDetection as ld
 from MarkedvsTrackedAccuracyDetector import distanceSquared
 
+
+class Beetle:
+    """Represents one beetle's location in a video"""
+    def __init__(self, ident, startX, startY):
+        self.ident = ident
+        self.x=startX
+        self.y=startY
+    def distanceToPoint(self, ptX, ptY):
+        """computes the Euclidean distance to the given pt"""
+        return ((self.x - ptX) ** 2 + (self.y - ptY) ** 2) ** 0.5
+    def __str__(self):
+        return "Beetle %s(%s,%s)"%(self.ident,self.x, self.y)
+    def __repr__(self):
+        return str(self)
+#    def __eq__(self, other):
+#        return self.ident == other.ident and self.x == other.x and self.y == other.y
+    
 def getFindingMethod(filename):
     if 'large' in filename:
         return ld.find_beetles_by_color
@@ -16,7 +33,7 @@ def getFindingMethod(filename):
     
 if __name__ == '__main__':
     filename="large1.mp4"
-    cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\" + filename)
+    cap = cv2.VideoCapture("H:\\Summer Research 2017\\Whirligig Beetle pictures and videos\\" + filename)
     
     successFlag, frame = cap.read()
     #successFlag, frame1 = cap.read()

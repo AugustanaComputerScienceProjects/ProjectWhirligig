@@ -8,6 +8,8 @@ def distanceSquared(pt1, pt2):
     x2,y2=pt2
     return (x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)
 
+
+    
 def compareMarkedAndTrackedFrames(trackedCoordFile, markedCoordFile, 
                                   frameImageFile, boxRadius):
     with open(trackedCoordFile) as f:
