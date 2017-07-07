@@ -73,7 +73,7 @@ def getFindingMethod(filename):
 
 def getMovementBetweenFramesThreshold(filename):
     if 'large' in filename:
-        return 25
+        return 30
     elif 'medium2' in filename:
         return 6.3
     elif 'medium5' in filename:
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture("H:\\Summer Research 2017\\Whirligig Beetle pictures and videos\\" + filename)
     
     if filename == 'large1.mp4':
-        for i in range(5*30): # Note not actually 30 FPS!
+        for i in range(48*30): # Note not actually 30 FPS!
             successFlag, frame = cap.read()
     
     successFlag, frame = cap.read()
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                     cv2.arrowedLine(frame,intTuple(beetle.history[-1][1]), intTuple(beetle.getCurrentLoc()), color, 2, 0, 0, 0.5)
                     cv2.putText(frame, " " + base36encode(beetle.ident), intTuple(beetle.loc), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-            if frameNum - beetle.getLastFrameSeen() > 5: #lost for 3 consecutive frames
+            if frameNum - beetle.getLastFrameSeen() > 5: #lost for 5 consecutive frames
                 # TODO: remove short history beetles here for efficiency, instead of filtering them out later?
                 archivedBeetleList.append(beetle)      
             else:
@@ -146,7 +146,7 @@ if __name__ == '__main__':
         #frame = imutils.resize(frame, width=1200, height=900)
         frame = imutils.resize(frame, width=1080, height=810)
         cv2.imshow("Frame", frame)
-        k = cv2.waitKey(100) & 0xFF
+        k = cv2.waitKey(1000) & 0xFF
         if k == 27:  # esc key
             break
     cv2.destroyAllWindows()
