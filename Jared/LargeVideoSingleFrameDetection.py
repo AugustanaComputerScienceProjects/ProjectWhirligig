@@ -67,13 +67,13 @@ if __name__ == '__main__':
                 cv2.circle(frame, (int (x), int (y)), 5, (0, 0, 255), -1)
                 
         # show the frame to our screen
-        frame = imutils.resize(frame, width=720, height=540)
+        #frame = imutils.resize(frame, width=1440, height=1080)
         cv2.imshow("Frame", frame)
-        cv2.imshow("Mask", mask)
+        #cv2.imshow("Mask", mask)
         #cv2.imshow("Mask2", mask2)
-        cv2.imshow("Mask3", mask3)
+        #cv2.imshow("Mask3", mask3)
         
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(10000) & 0xFF
      
         # if the 'q' key is pressed, stop the loop
         if key == ord("q"):

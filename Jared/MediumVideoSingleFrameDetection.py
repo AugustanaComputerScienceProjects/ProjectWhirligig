@@ -121,9 +121,9 @@ if __name__ == '__main__':
                 cv2.circle(frame, (int (x),int (y)), 5, (0, 255, 255), -1)
                 fout.write(str(x) + ' ' + str(y) + '\n')
     
-        frame = imutils.resize(frame, width=1000, height=800)
+        #frame = imutils.resize(frame, width=1000, height=800)
         cv2.imshow("Frame", frame)
-        k = cv2.waitKey(1) & 0xFF
+        k = cv2.waitKey(10000) & 0xFF
         if k == 27:  # esc key
             break
     cv2.destroyAllWindows()
