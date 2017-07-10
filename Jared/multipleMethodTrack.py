@@ -23,7 +23,7 @@ def getFindingMethod(filename):
     
 if __name__ == '__main__':
     filename="large1.mp4"
-    cap = cv2.VideoCapture(r"H:\ProjectWhirligig\" + filename)
+    cap = cv2.VideoCapture("H:\\ProjectWhirligig\\" + filename)
     
     successFlag, frame = cap.read()
     #successFlag, frame1 = cap.read()
