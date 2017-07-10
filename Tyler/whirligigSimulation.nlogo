@@ -40,7 +40,7 @@ to move-beetles
 
     if (count beetles in-cone 6 120) < 3 [
       right (random 91 - 45)
-      turn-towards 180 5
+      turn-towards 180 3
       ]
 
     ifelse patch-ahead 1 != nobody and not any? beetles-on patch-ahead 1 [
@@ -48,7 +48,7 @@ to move-beetles
    ]
     [
         rt (random 91 - 45)
-      turn-towards 180 5
+      turn-towards 180 3
     ]
 
     set hunger hunger + dt * 1
@@ -89,7 +89,7 @@ end
 
 to setup-beetles
   create-beetles beetle-population [
-    set shape "bug"
+;    set shape "bug"
     setxy random-xcor / 2 random-ycor / 2
     set color black
     set hunger (random 100)
@@ -161,6 +161,24 @@ to make-movie
     set frameNum frameNum + 1
     export-view (word "frames/frame_" (pad-zeros frameNum 3) ".png")
   ]
+end
+
+to-report sortedxs
+  let xs []
+  foreach (sort beetles) [
+    set xs lput [xcor] of ? xs
+  ]
+  report xs
+end
+
+
+
+to-report sortedys
+  let ys []
+  foreach (sort beetles) [
+    set ys lput [ycor] of ? ys
+  ]
+  report ys
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -698,6 +716,36 @@ NetLogo 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100"/>
+    <metric>sortedxs</metric>
+    <metric>sortedys</metric>
+    <enumeratedValueSet variable="add-food-chance">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="beetle-gain-from-food">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="beetle-population">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="stream?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vision">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-hunger?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="dt">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
