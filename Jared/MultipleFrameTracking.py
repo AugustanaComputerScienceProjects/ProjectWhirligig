@@ -116,7 +116,10 @@ if __name__ == '__main__':
         for beetle in activeBeetleList:
             if len(curLocations) > 0:
                 beetleLoc= beetle.getCurrentLoc() # OR velocity predicted?
-                bestLoc = min(curLocations, key=lambda pt: distanceSquared(beetleLoc,pt))
+                #find closest to last frame
+                #bestLoc = min(curLocations, key=lambda pt: distanceSquared(beetleLoc,pt))
+                #find closest based on velocity
+                bestLoc = min(curLocations, key=lambda pt: distanceSquared(beetle.predictNewLocUsingVelocity(frameNum), pt))
                 if distance(bestLoc,beetleLoc) < getMovementBetweenFramesThreshold(filename):
                     curLocations.remove(bestLoc)
                     beetle.updateCoord(frameNum,bestLoc)
