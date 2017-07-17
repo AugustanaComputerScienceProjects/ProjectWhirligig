@@ -12,7 +12,8 @@ def find_beetles_by_color(frame):
     lower_thresh_light = np.array([100,105,100])
     upper_thresh_light = np.array([200,200,200])
     
-    
+    lower_thresh_nb = np.array([50,35,35])
+    upper_thresh_nb = np.array([100,105,100])
     
 
     # convert it to the HSV color space
@@ -22,15 +23,24 @@ def find_beetles_by_color(frame):
     # blobs left in the mask and merge small blogs into biggers ones
     mask_dark = cv2.inRange(frame, lower_thresh_dark, upper_thresh_dark)
     mask_light=cv2.inRange(frame, lower_thresh_light, upper_thresh_light)
+    mask_nb=cv2.inRange(frame, lower_thresh_nb, upper_thresh_nb)
+    cv2.imshow("inv", mask_nb)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
     mask2 = cv2.erode(mask_dark, kernel, iterations=1)
     mask3 = cv2.dilate(mask2, kernel, iterations=6)
+    mask4=cv2.dilate(mask2, kernel, iterations=12)
+    cv2.imshow("mask4", mask4)
+    combined = cv2.bitwise_or(mask_dark,mask_light)
     
-    edges = cv2.Canny(frame,50,100)
-    cv2.imshow("edges", edges)
-    
+    edges = cv2.Canny(frame,25,75)
+    combined=cv2.bitwise_or(combined,mask_nb)
+    cv2.imshow("combined", combined)
+    combined2 = cv2.bitwise_or(combined, edges, mask=mask4)
+    cv2.imshow("combined2", combined2)
+    closing = cv2.morphologyEx(combined2, cv2.MORPH_CLOSE, kernel, iterations=5)
+    cv2.imshow("closing", closing)
     # find contours in the mask 
-    cnts = cv2.findContours(mask3.copy(), cv2.RETR_EXTERNAL,
+    cnts = cv2.findContours(closing.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
     
     coords = []
@@ -38,7 +48,7 @@ def find_beetles_by_color(frame):
 
     for c in cnts:
         ((x, y), radius) = cv2.minEnclosingCircle(c)          
-        if 30 < radius <= 60:
+        if 30 < radius <= 100:
             improvedContourList.extend(splitMultipleBeetles(mask3,c))
         else:
             improvedContourList.append(c)
@@ -54,14 +64,14 @@ def find_beetles_by_color(frame):
             #cv2.drawContours(frame,[np.int0(box)],0,(0,0,255),2)
             #cv2.circle(frame, (int(x), int(y)), int(radius),
                    # (0, 255, 255), 2)
-    #mask3 = imutils.resize(mask3, width=1080, height=810)
-    #cv2.imshow("Mask3", mask3)
+    mask3 = imutils.resize(mask3, width=1080, height=810)
+    cv2.imshow("Mask3", mask3)
     
-    #mask_dark = imutils.resize(mask_dark, width=1080, height=810)
-    #cv2.imshow("Mask Dark", mask_dark)
+    mask_dark = imutils.resize(mask_dark, width=1080, height=810)
+    cv2.imshow("Mask Dark", mask_dark)
     
-    #mask_light = imutils.resize(mask_light, width=1080, height=810)
-    #cv2.imshow("Mask light", mask_light)
+    mask_light = imutils.resize(mask_light, width=1080, height=810)
+    cv2.imshow("Mask light", mask_light)
     return coords
 
 def splitMultipleBeetles(maskImage, bigContour):

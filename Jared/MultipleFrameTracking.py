@@ -87,7 +87,7 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture("H:\\Summer Research 2017\\Whirligig Beetle pictures and videos\\" + filename)
     
     if filename == 'large1.mp4':
-        for i in range(48*30): # Note not actually 30 FPS!
+        for i in range(5*30): # Note not actually 30 FPS!
             successFlag, frame = cap.read()
     
     successFlag, frame = cap.read()
@@ -146,7 +146,7 @@ if __name__ == '__main__':
         #frame = imutils.resize(frame, width=1200, height=900)
         frame = imutils.resize(frame, width=1080, height=810)
         cv2.imshow("Frame", frame)
-        k = cv2.waitKey(1000) & 0xFF
+        k = cv2.waitKey(1) & 0xFF
         if k == 27:  # esc key
             break
     cv2.destroyAllWindows()
