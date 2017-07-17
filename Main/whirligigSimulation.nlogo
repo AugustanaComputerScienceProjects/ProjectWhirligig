@@ -20,7 +20,7 @@ end
 to go
   stream
   move-beetles
-  display-labels
+;  display-labels
 
   add-food
 
@@ -101,11 +101,11 @@ to setup-patches
   ask patches [ set pcolor blue + 3]
 end
 
-to display-labels
-  ifelse show-hunger?
-  [ ask beetles [ set label (precision hunger 0)] ]
-  [ ask beetles [ set label ""     ] ]
-end
+;to display-labels
+; ifelse show-hunger?
+;  [ ask beetles [ set label (precision hunger 0)] ]
+; [ ask beetles [ set label ""     ] ]
+;end
 
 to setup-food
   repeat 100 [ add-food ]
@@ -283,22 +283,11 @@ beetle-gain-from-food
 NIL
 HORIZONTAL
 
-SWITCH
-23
-220
-193
-253
-show-hunger?
-show-hunger?
-1
-1
--1000
-
 SLIDER
-22
-254
-194
-287
+20
+220
+192
+253
 add-food-chance
 add-food-chance
 0
@@ -311,14 +300,14 @@ HORIZONTAL
 
 SLIDER
 20
-290
+255
 192
-323
+288
 turn-back-distance
 turn-back-distance
-0
+1
 10
-6
+5
 1
 1
 NIL
@@ -326,9 +315,9 @@ HORIZONTAL
 
 SLIDER
 20
-325
+295
 192
-358
+328
 dt
 dt
 0
@@ -341,9 +330,9 @@ HORIZONTAL
 
 BUTTON
 20
-365
+330
 117
-398
+363
 NIL
 make-movie
 NIL
@@ -355,6 +344,24 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+0
+375
+200
+525
+plot 1
+Time
+Food
+0.0
+100.0
+0.0
+25.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count food"
 
 @#$#@#$#@
 ## WHAT IS IT?

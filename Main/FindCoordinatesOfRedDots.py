@@ -10,7 +10,7 @@ Counts the number of red dots and prints them
 import numpy as np
 import cv2
 
-imageFileName = 'marked_frames/large1_frame0001_markedHH.png'
+imageFileName = 'marked_frames/large1_frame0001.png'
 textFileName = imageFileName.replace('.png', '') + '.txt'
 
 img = cv2.imread(imageFileName)
