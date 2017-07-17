@@ -38,7 +38,7 @@ to move-beetles
     if (scared?)[ set speed speed + 5 ]
     if speed > 5 [ set speed 5 ]
 
-    if (count beetles in-cone 6 120) < 3 [
+    if (count beetles in-cone turn-back-distance 120) < 3 [
       right (random 91 - 45)
       turn-towards 180 3
       ]
@@ -310,25 +310,25 @@ add-food-chance
 HORIZONTAL
 
 SLIDER
-18
-304
-190
-337
-vision
-vision
+20
+290
+192
+323
+turn-back-distance
+turn-back-distance
 0
-5
-2
+10
+6
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-21
-357
-193
-390
+20
+325
+192
+358
 dt
 dt
 0
@@ -340,10 +340,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-70
-425
-167
-458
+20
+365
+117
+398
 NIL
 make-movie
 NIL

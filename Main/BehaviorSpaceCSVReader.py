@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+@author: tylermay14
 
-This is a temporary script file.
+Takes NetLogo behavior space csv data and extracts the x and y locations of each beetle at each tick.  
+The path of each beetle is plotted.
 """
 from pylab import *
 import csv
