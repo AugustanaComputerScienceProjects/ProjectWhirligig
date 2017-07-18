@@ -23,13 +23,11 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
 
     return image
 
-inputVideo = cv2.VideoCapture(r'S:\CLASS\CS\ProjectWhirligig\videos\medium2.mp4')
+inputVideo = cv2.VideoCapture(r'S:\CLASS\CS\ProjectWhirligig\videos\large1.mp4')
 fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 prevFrame = create_blank(1440, 1080, (255, 255, 255))
 
-fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-out = cv2.VideoWriter("backfroundremoval.avi", fourcc, 20.0, (1440, 1080))
-print (out.isOpened())  # True = write out video successfully. False - fail to write out video.
+
 history = 1000
 
 while (1):
@@ -45,4 +43,3 @@ while (1):
         break
 cv2.destroyAllWindows()
 inputVideo.release()
-out.release()
