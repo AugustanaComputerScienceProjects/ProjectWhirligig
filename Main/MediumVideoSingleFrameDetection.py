@@ -1,9 +1,10 @@
+"""This program was made to analyze video medium5.mp4 by looking at each frame 
+and detecting all the beetles in that frame and their coordinates. However it 
+does not find the identies of beetles. This program uses corner detection and
+thresholding algorithim together and looks for matches between the lists. 
+It also takes beetles that are too close together and splits them up so they 
+are not tracked as one beetle"""
 
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
-This is a temporary script file.
-"""
 import cv2
 import numpy as np
 from collections import deque
@@ -20,7 +21,6 @@ textFileName = frameFileName.replace('.mp4', '') + 'MultipleMethods.txt'
 def splitMultipleBeetles(maskImage, bigContour):
     x,y,w,h = cv2.boundingRect(bigContour)
     cropped = maskImage[y:(y + h),x:(x + w)]
-    #kernel = np.ones((3,3),np.uint8)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
     eroded=cv2.erode(cropped, kernel, iterations=1)
     cnts = cv2.findContours(eroded.copy(), cv2.RETR_EXTERNAL,
@@ -28,15 +28,13 @@ def splitMultipleBeetles(maskImage, bigContour):
     for cnt in cnts:
         cnt += np.array([x,y])
     return cnts
-    
+ 
+#Returns a list of the coordinates of the beetles detected by
+#the thresholding algorithim    
 def find_beetles_by_threshold(frame):
     locthresh=[]
-    #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    #mask = cv2.inRange(hsv, np.array([0,0,0]), np.array([200,200,47]))
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-    #thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=1)
     cv2.imshow("thresh", thresh)
     # find contours in the mask and initialize the current
     # (x, y) center of the ball
@@ -51,7 +49,6 @@ def find_beetles_by_threshold(frame):
         else:
             improvedContourList.append(c)
           
-
     # process each contour in our contour list
     for c in improvedContourList:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
@@ -61,21 +58,17 @@ def find_beetles_by_threshold(frame):
         
     return locthresh
 
+#Returns a list of coordinats of the beetles detected by the corner
+#detection
 def find_beetles_by_corners(frame):
     loccr=[]
     lower_hsv_thresholdcr = np.array([0,250,250])
     upper_hsv_thresholdcr = np.array([10,255,255])
     gray = np.float32(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY))
     dst = cv2.cornerHarris(gray,2,3,0.04)
-    #result is dilated for marking the corners, not important
-    dst = cv2.dilate(dst,None)
     frameWithRedCorners = np.copy(frame)
-    # Threshold for an optimal value, it may vary depending on the image.
     frameWithRedCorners[dst>0.015*dst.max()]=[0,0,255]
     hsv = cv2.cvtColor(frameWithRedCorners, cv2.COLOR_BGR2HSV)
-    # construct a mask for the color "green", then perform
-    # a series of dilations and erosions to remove any small
-    # blobs left in the mask
     crmask = cv2.inRange(hsv, lower_hsv_thresholdcr, upper_hsv_thresholdcr)
     cntscr = cv2.findContours(crmask.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
@@ -87,6 +80,8 @@ def find_beetles_by_corners(frame):
             loccr.append((x,y))
     return loccr
 
+#goes through list of the thresholding coordinates and 
+#corner detected coordinates and looks for matches 
 def find_beetles_combined(frame):
     matched=[]
     locthresh=find_beetles_by_threshold(frame)
