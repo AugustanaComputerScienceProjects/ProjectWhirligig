@@ -90,15 +90,15 @@ def compareMarkedAndTrackedFrames(trackedCoordFile, markedCoordFile,
 CHECK_FRAME_LIST = [1] + list(range(151,178+1,3))
 
 for frameNum in CHECK_FRAME_LIST:
-    compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d_predicted.txt"%frameNum,
-                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d.txt"%frameNum,
-                                  r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame%04d.png"%frameNum,
-                                  15)
+#    compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d_predicted.txt"%frameNum,
+#                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d.txt"%frameNum,
+#                                  r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame%04d.png"%frameNum,
+#                                  15)
 
-#compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.txt",
-#                              r"H:\Summer Research 2017\ProjectWhirligig\Jared\medium5_frame0001_markedHH.txt",
-#                              r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/medium5_frame0001.png",
-#                              6)
+    compareMarkedAndTrackedFrames(r"H:\ProjectWhirligig/medium5tracked.txt",
+                                  r"H:\git\ProjectWhirligig\tyler\marked_frames\medium5\medium5_frame0001.txt",
+                                  r"H:\ProjectWhirligig\medium5 Pictures\medium5_frame0001.png",
+                                  6)
 
 #compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5MultipleMethods.txt",
 #                              r"H:\Summer Research 2017\ProjectWhirligig\Jared\medium5_frame0001_markedHH.txt",

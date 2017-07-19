@@ -12,7 +12,7 @@ import misc_image_tools
 
 
 
-frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4"
+frameFileName = r"S:\CLASS\CS\ProjectWhirligig\videos\large1.mp4"
 textFileName = frameFileName.replace('.mp4', '') + 'MultipleMethods.txt'
 
 
@@ -103,7 +103,7 @@ def matches(xm, ym, xt, yt):
     return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
 
 if __name__ == '__main__':
-    cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
+    cap = cv2.VideoCapture(r"S:\CLASS\CS\ProjectWhirligig\videos\large1.mp4")
     
     while(1): 
        
