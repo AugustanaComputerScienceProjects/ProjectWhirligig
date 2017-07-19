@@ -1,3 +1,7 @@
+"""This program uses the single frame tracking programs and tries to give each 
+beetle an identity and give a list of movents for each particular beetle as 
+they move around."""
+
 import cv2
 import numpy as np
 from collections import deque
@@ -11,10 +15,12 @@ filename="large1.mp4"
 
 TRACKING_COLOR_LIST = [(240,163,255),(0,117,220),(153,63,0),(76,0,92),(25,25,25),(0,92,49),(43,206,72),(255,204,153),(128,128,128),(148,255,181),(143,124,0),(157,204,0),(194,0,136),(0,51,128),(255,164,5),(255,168,187),(66,102,0),(255,0,16),(94,241,242),(0,153,143),(224,255,102),(116,10,255),(153,0,0),(255,255,128),(255,255,0),(255,80,5)]
 
+#Finds distance between two points
 def distance(pt1, pt2):
     """computes the Euclidean distance between pts"""
     return ((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2) ** 0.5
 
+#Finds the squared distance between two points for better efficiency
 def distanceSquared(pt1, pt2):
     """computes the square of the Euclidean distance between pts"""
     return ((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
@@ -25,6 +31,8 @@ def intTuple(pt):
 
 identCounter = 0
 
+#Beetle class that stores the a list of the history of coordinates of a beetle
+#its current location in the frame and the curent frame number
 class Beetle:
     """Represents one beetle's location in a video"""
     def __init__(self, startFrame, startLoc):
@@ -62,7 +70,7 @@ class Beetle:
         
 #    def __eq__(self, other):
 #        return self.ident == other.ident and self.x == other.x and self.y == other.y
-    
+#Decides which single frame tracking program to use based on name of video file    
 def getFindingMethod(filename):
     if 'large' in filename:
         return ld.find_beetles_by_color
@@ -71,6 +79,7 @@ def getFindingMethod(filename):
     else:
         raise Exception("I don't know what method to use for " + filename)
 
+#Finds correct scale of movement based on video zoom
 def getMovementBetweenFramesThreshold(filename):
     if 'large' in filename:
         return 30
@@ -92,14 +101,20 @@ if __name__ == '__main__':
     
     successFlag, frame = cap.read()
     #successFlag, frame1 = cap.read()
+    #gets location of beetles from single frame tracking program 
     findingFunction = getFindingMethod(filename)
     curLocations = findingFunction(frame)
     
+    #List of beetles currently being tracked
     activeBeetleList = []
+    #List of beetles that are no longer being tracked
     archivedBeetleList = []
+    #List of all betles that were tracked for a certain amount of frames
     beetlesWithLongHistories = set([])
     
     frameNum = 0
+    #Adds all beetles curently tracked by the single frame detection two active 
+    #beetle list
     for loc in curLocations:
         activeBeetleList.append(Beetle(frameNum,loc))
     
@@ -116,7 +131,7 @@ if __name__ == '__main__':
         for beetle in activeBeetleList:
             if len(curLocations) > 0:
                 beetleLoc= beetle.getCurrentLoc() # OR velocity predicted?
-                #find closest to last frame
+                #find closest beetle to last frame
                 bestLoc = min(curLocations, key=lambda pt: distanceSquared(beetleLoc,pt))
                 #find closest based on velocity
                 #bestLoc = min(curLocations, key=lambda pt: distanceSquared(beetle.predictNewLocUsingVelocity(frameNum), pt))
@@ -128,7 +143,7 @@ if __name__ == '__main__':
                     cv2.arrowedLine(frame,intTuple(beetle.history[-1][1]), intTuple(beetle.getCurrentLoc()), color, 2, 0, 0, 0.5)
                     cv2.putText(frame, " " + base36encode(beetle.ident), intTuple(beetle.loc), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-            if frameNum - beetle.getLastFrameSeen() > 5: #lost for 5 consecutive frames
+            if frameNum - beetle.getLastFrameSeen() > 5: #if beetle lost for 5 consecutive frames add to archived beetles
                 # TODO: remove short history beetles here for efficiency, instead of filtering them out later?
                 archivedBeetleList.append(beetle)      
             else:
