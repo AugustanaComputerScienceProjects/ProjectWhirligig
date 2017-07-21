@@ -122,33 +122,23 @@ CHECK_FRAME_LIST =list(range(151,178+1,3))
 #Used to calculate overall accuracy
 num=0
 total=0
-#for frameNum in CHECK_FRAME_LIST:
-#    num+=1
-#    print(num)
-#    total+=compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d_predicted.txt"%frameNum,
-#                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d.txt"%frameNum,
-#                                  r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame%04d.png"%frameNum,
-#                                  15)
-#print ("Overall accuracy:"+str(str('{0:.4g}'.format(total/num)+"%")))
 for frameNum in CHECK_FRAME_LIST:
-
-#    compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d_predicted.txt"%frameNum,
-#                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d.txt"%frameNum,
-#                                  r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame%04d.png"%frameNum,
-#                                  15)
-
-    compareMarkedAndTrackedFrames(r"H:\ProjectWhirligig/medium5tracked.txt",
-                                  r"H:\git\ProjectWhirligig\tyler\marked_frames\medium5\medium5_frame0001.txt",
-                                  r"H:\ProjectWhirligig\medium5 Pictures\medium5_frame0001.png",
-                                  6)
-
     num+=1
     print(num)
-    total+=compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5_frame%04d_predicted.txt"%frameNum,
-                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5_frame%04d.txt"%frameNum,
-                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5_frame%04d.png"%frameNum,
-                                  6)
+    total+=compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d_predicted.txt"%frameNum,
+                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1_frame%04d.txt"%frameNum,
+                                  r"H:/Summer Research 2017/Whirligig Beetle pictures and videos/large1_frame%04d.png"%frameNum,
+                                  15)
 print ("Overall accuracy:"+str(str('{0:.4g}'.format(total/num)+"%")))
+#for frameNum in CHECK_FRAME_LIST:
+#
+#    num+=1
+#    print(num)
+#    total+=compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5_frame%04d_predicted.txt"%frameNum,
+#                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5_frame%04d.txt"%frameNum,
+#                                  r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5_frame%04d.png"%frameNum,
+#                                  6)
+#print ("Overall accuracy:"+str(str('{0:.4g}'.format(total/num)+"%")))
 
 #compareMarkedAndTrackedFrames(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5MultipleMethods.txt",
 #                              r"H:\Summer Research 2017\ProjectWhirligig\Jared\medium5_frame0001_markedHH.txt",

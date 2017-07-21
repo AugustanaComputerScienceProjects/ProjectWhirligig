@@ -110,23 +110,16 @@ def splitMultipleBeetles(frame, bigContour):
         #            (0, 255, 255), 2)
        cnt += np.array([x,y])
    return cnts   
+   
 CHECK_FRAME_LIST = [1] + list(range(151,178+1,3))
 if __name__ == '__main__':
-    frameFileName = r"H:\ProjectWhirligig\large1.mp4"
+    frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4"
     # then initialize the
     # list of tracked points
     textFileName = frameFileName.replace('.mp4', '');
-
-    
-    
-    camera = cv2.VideoCapture(r"H:\ProjectWhirligig\large1.mp4")
-   
-    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-    out = cv2.VideoWriter("LargeVideoSingleFrameDetection.avi", fourcc, 20.0, (1080, 810))
-    
-
-    camera = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4")
-
+    camera = cv2.VideoCapture(frameFileName)
+    #fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    #out = cv2.VideoWriter("LargeVideoSingleFrameDetection.avi", fourcc, 20.0, (1080, 810))
     frameNum = 0
     while True:
         # grab the current frame
@@ -145,10 +138,7 @@ if __name__ == '__main__':
         # show the frame to our screen
         frame = imutils.resize(frame, width=1080, height=810)
         cv2.imshow("Frame", frame)
-
-        out.write(frame)
-       
-    
+        #out.write(frame)
         key = cv2.waitKey(1) & 0xFF
         # if the 'q' key is pressed, stop the loop
         if key == ord("q"):
@@ -156,4 +146,4 @@ if __name__ == '__main__':
     # cleanup the camera and close any open windows
     camera.release()
     cv2.destroyAllWindows()
-    out.release()
+    #out.release()

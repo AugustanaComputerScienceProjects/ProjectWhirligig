@@ -4,7 +4,6 @@ they move around."""
 
 import cv2
 import numpy as np
-from collections import deque
 import imutils
 from pylab import *
 import MediumVideoSingleFrameDetection as md
@@ -12,7 +11,7 @@ import LargeVideoSingleFrameDetection as ld
 
 from base36 import *
 
-filename="medium5.mp4"
+filename="large1.mp4"
 
 TRACKING_COLOR_LIST = [(240,163,255),(0,117,220),(153,63,0),(76,0,92),(25,25,25),(0,92,49),(43,206,72),(255,204,153),(128,128,128),(148,255,181),(143,124,0),(157,204,0),(194,0,136),(0,51,128),(255,164,5),(255,168,187),(66,102,0),(255,0,16),(94,241,242),(0,153,143),(224,255,102),(116,10,255),(153,0,0),(255,255,128),(255,255,0),(255,80,5)]
 
@@ -93,10 +92,9 @@ def getMovementBetweenFramesThreshold(filename):
 
     
 if __name__ == '__main__':
-    
-    cap = cv2.VideoCapture("H:\ProjectWhirligig\\" + filename)
-    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-    out = cv2.VideoWriter("MultipleFrameTracking.avi", fourcc, 20.0, (1080, 810))
+    cap = cv2.VideoCapture("H:\\Summer Research 2017\Whirligig Beetle pictures and videos\\"+ filename)
+    #fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    #out = cv2.VideoWriter("MultipleFrameTracking.avi", fourcc, 20.0, (1080, 810))
     
     if filename == 'large1.mp4':
         for i in range(5*30): # Note not actually 30 FPS!
@@ -165,7 +163,7 @@ if __name__ == '__main__':
         
         frame = imutils.resize(frame, width=1080, height=810)
         cv2.imshow("Frame", frame)
-        out.write(frame)
+        #out.write(frame)
         k = cv2.waitKey(1) & 0xFF
         if k == 27:  # esc key
             break
@@ -178,4 +176,4 @@ if __name__ == '__main__':
        plot(beetlexs[-1:],beetleys[-1:],'k.',marker="$"+base36encode(beetle.ident)+"$")
     cv2.destroyAllWindows()
     cap.release()
-    out.release()
+    #out.release()
