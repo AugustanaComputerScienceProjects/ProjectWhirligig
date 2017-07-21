@@ -94,7 +94,9 @@ def getMovementBetweenFramesThreshold(filename):
     
 if __name__ == '__main__':
     
-    cap = cv2.VideoCapture("H:\\Summer Research 2017\\Whirligig Beetle pictures and videos\\" + filename)
+    cap = cv2.VideoCapture("H:\ProjectWhirligig\\" + filename)
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    out = cv2.VideoWriter("MultipleFrameTracking.avi", fourcc, 20.0, (1080, 810))
     
     if filename == 'large1.mp4':
         for i in range(5*30): # Note not actually 30 FPS!
@@ -163,6 +165,7 @@ if __name__ == '__main__':
         
         frame = imutils.resize(frame, width=1080, height=810)
         cv2.imshow("Frame", frame)
+        out.write(frame)
         k = cv2.waitKey(1) & 0xFF
         if k == 27:  # esc key
             break
@@ -175,3 +178,4 @@ if __name__ == '__main__':
        plot(beetlexs[-1:],beetleys[-1:],'k.',marker="$"+base36encode(beetle.ident)+"$")
     cv2.destroyAllWindows()
     cap.release()
+    out.release()

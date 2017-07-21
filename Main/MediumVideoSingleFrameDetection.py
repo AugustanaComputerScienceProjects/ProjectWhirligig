@@ -10,8 +10,10 @@ import numpy as np
 from collections import deque
 import imutils
 
+
 frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4"
 textFileName = frameFileName.replace('.mp4', '')
+
 
 # returns a LIST of small contours resulting from eroding one large contour
 def splitMultipleBeetles(maskImage, bigContour):
@@ -94,9 +96,11 @@ def matches(xm, ym, xt, yt):
     return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
 CHECK_FRAME_LIST = [1] + list(range(151,178+1,3))
 if __name__ == '__main__':
+
     cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
     frameNum = 0
     while(True): 
+
        
         successFlag, frame = cap.read()
         frameNum += 1
