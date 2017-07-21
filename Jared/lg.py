@@ -8,11 +8,73 @@ import numpy as np
 import cv2
 import imutils
 
+
+def find_beetles_by_corners(frame):
+    loccr=[]
+    lower_hsv_thresholdcr = np.array([0,250,250])
+    upper_hsv_thresholdcr = np.array([10,255,255])
+    gray = np.float32(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY))
+    dst = cv2.cornerHarris(gray,2,3,0.00000000004)
+    frameWithRedCorners = np.copy(frame)
+    frameWithRedCorners[dst>0.04*dst.max()]=[0,0,255]
+    hsv = cv2.cvtColor(frameWithRedCorners, cv2.COLOR_BGR2HSV)
+    crmask = cv2.inRange(hsv, lower_hsv_thresholdcr, upper_hsv_thresholdcr)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+    crmask = cv2.morphologyEx(crmask, cv2.MORPH_CLOSE, kernel, iterations=20)
+    crmask = cv2.morphologyEx(crmask,cv2.MORPH_OPEN,kernel, iterations = 10)
+    cv2.imshow("crmask", crmask)
+    cntscr = cv2.findContours(crmask.copy(), cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)[-2]
+    cv2.imshow("cr", frameWithRedCorners)
+     # process each contour in our contour list
+    for c in cntscr:
+        ((x, y), radius) = cv2.minEnclosingCircle(c)
+        if radius > 0 and radius <100:
+            loccr.append((x,y))
+    return loccr
+
+
 def matches(xm, ym, xt, yt):
     return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
+def find_dark_colors(frame):
+    mask_dark_green = cv2.inRange(frame, np.array([0,0,0]), np.array([255,37,255]))
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+    mask_dark_green2 = cv2.morphologyEx(mask_dark_green,cv2.MORPH_OPEN,kernel, iterations = 1)
+    #cv2.imshow("erode", mask2)
+    mask_dark_green3 = cv2.dilate(mask_dark_green2, kernel, iterations=5)
+    cnts = cv2.findContours(mask_dark_green3.copy(), cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)[-2]
+    coords = []
+    improvedContourList = []
 
+    for c in cnts:
+        ((x, y), radius) = cv2.minEnclosingCircle(c)          
+        if 30 < radius <= 100:
+            improvedContourList.extend(splitMultipleBeetles(frame,c))
+        else:
+            improvedContourList.append(c)
+          
 
-def find_beetles_by_color(frame):
+    # process each contour in our contour list
+    for c in improvedContourList:
+        ((x, y), radius) = cv2.minEnclosingCircle(c)
+        if 7 < radius <= 30:
+            coords.append((x,y))
+            
+    return coords
+def find_beetles_combined(frame):
+    matched=[]
+    loccolor=find_beetles_by_color(frame)
+    locdark=find_dark_colors(frame)
+    for xm, ym in locdark:
+        for xt, yt in loccolor:
+            if matches(xm, ym, xt, yt):
+                matched.append((xm,ym))
+#    print ("Corner detect length:"+ str(len(loccr)))
+#    print ("Thresh detect length:" +str(len(locthresh)))
+    return matched
+#Returns a list of the coordinates of the beetles
+def find_beetles_by_color2(frame):
     lower_hsv_thresholdcr = np.array([0,250,250])
     upper_hsv_thresholdcr = np.array([10,255,255])
     gray = np.float32(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY))
@@ -46,16 +108,21 @@ def find_beetles_by_color(frame):
     mask_dark_green2 = cv2.morphologyEx(mask_dark_green,cv2.MORPH_OPEN,kernel, iterations = 1)
     #cv2.imshow("erode", mask2)
     mask_dark_green3 = cv2.dilate(mask_dark_green2, kernel, iterations=5)
+    mask_sure_beetles=cv2.dilate(mask_dark_green2, kernel, iterations=25)
     
     #Combines all the masks together
+    comB=cv2.bitwise_or(mask_dark_green, mask_mid)
+    comB = cv2.morphologyEx(comB, cv2.MORPH_CLOSE, kernel, iterations=10)
+    comB = cv2.morphologyEx(comB,cv2.MORPH_OPEN,kernel, iterations = 5)
+    cv2.imshow("comB", comB)
     combinedMask = cv2.bitwise_or(mask_dark_green3,thresh)
     combinedMask= cv2.bitwise_or(combinedMask, mask_light)
     combinedMask=cv2.bitwise_or(combinedMask, mask_mid)
     #combinedMask=cv2.bitwise_or(combinedMask, crmask)
     combinedMask=cv2.bitwise_or(combinedMask,mask_outline, mask=crmask3)
     cv2.imshow("combinedMask", combinedMask)
-    closing = cv2.morphologyEx(combinedMask, cv2.MORPH_CLOSE, kernel, iterations=3)
-    opening = cv2.morphologyEx(closing,cv2.MORPH_OPEN,kernel, iterations = 2)
+    closing = cv2.morphologyEx(combinedMask, cv2.MORPH_CLOSE, kernel, iterations=5)
+    opening = cv2.morphologyEx(closing,cv2.MORPH_OPEN,kernel, iterations = 5)
 
     cv2.imshow("closing", opening)
     # find contours in the mask 
@@ -78,7 +145,7 @@ def find_beetles_by_color(frame):
     # process each contour in our contour list
     for c in improvedContourList:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
-        if 10 < radius <= 35:
+        if 8 < radius <= 35:
             coords.append((x,y))
             
     #mask_dark_green=imutils.resize(mask_dark_green, width=1080, height=810)
@@ -98,11 +165,12 @@ def splitMultipleBeetles(frame, bigContour):
    cropped = frame[y:(y + h),x:(x + w)]
    mask_dark_green = cv2.inRange(cropped, np.array([0,0,0]), np.array([255,37,255]))
    mask_mid = cv2.inRange(cropped, np.array([10,10,120]), np.array([250,250,250]))
-   combinedSmall=cv2.bitwise_or(mask_dark_green, mask_mid)
+   comB=cv2.bitwise_or(mask_dark_green, mask_mid)
    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-   combinedSmall = cv2.morphologyEx(combinedSmall, cv2.MORPH_CLOSE, kernel, iterations=3)
-   combinedSmall = cv2.morphologyEx(combinedSmall,cv2.MORPH_OPEN,kernel, iterations = 2)
-   cnts = cv2.findContours(combinedSmall.copy(), cv2.RETR_EXTERNAL,
+   comB = cv2.morphologyEx(comB, cv2.MORPH_CLOSE, kernel, iterations=3)
+   comB = cv2.morphologyEx(comB,cv2.MORPH_OPEN,kernel, iterations = 2)
+   eroded=cv2.erode(mask_mid, kernel, iterations=2)
+   cnts = cv2.findContours(comB.copy(), cv2.RETR_EXTERNAL,
     cv2.CHAIN_APPROX_SIMPLE)[-2]
    for cnt in cnts:
        #((x, y), radius) = cv2.minEnclosingCircle(cnt)
@@ -124,7 +192,7 @@ if __name__ == '__main__':
         frameNum += 1
         if not grabbed:
             break
-        coords = find_beetles_by_color(frame)
+        coords = find_beetles_by_color2(frame)
         if frameNum in CHECK_FRAME_LIST:
             # process each contour in our contour list
             with open("%s_frame%04d_predicted.txt"%(textFileName,frameNum) , 'w') as fout:

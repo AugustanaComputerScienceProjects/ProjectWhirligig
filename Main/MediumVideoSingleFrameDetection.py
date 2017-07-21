@@ -9,13 +9,9 @@ import cv2
 import numpy as np
 from collections import deque
 import imutils
-import misc_image_tools 
-
-
 
 frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4"
-textFileName = frameFileName.replace('.mp4', '') + 'MultipleMethods.txt'
-
+textFileName = frameFileName.replace('.mp4', '')
 
 # returns a LIST of small contours resulting from eroding one large contour
 def splitMultipleBeetles(maskImage, bigContour):
@@ -96,29 +92,30 @@ def find_beetles_combined(frame):
 
 def matches(xm, ym, xt, yt):
     return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
-
+CHECK_FRAME_LIST = [1] + list(range(151,178+1,3))
 if __name__ == '__main__':
     cap = cv2.VideoCapture(r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\medium5.mp4")
-    
-    while(1): 
+    frameNum = 0
+    while(True): 
        
         successFlag, frame = cap.read()
+        frameNum += 1
         if not successFlag:
             cv2.waitKey(0)
             break 
         matched=find_beetles_combined(frame)
         
         print ("Matched length:"+str(len(set(matched))))
-        
-        with open(textFileName, 'w') as fout:
-            for x,y in set(matched):
+        if frameNum in CHECK_FRAME_LIST:
+            with open("%s_frame%04d_predicted.txt"%(textFileName,frameNum) , 'w') as fout:
+                for x,y in set(matched):
+                    fout.write(str(x) + ' ' + str(y) + '\n')
+        for x,y in set(matched):
             # draw a circle at each x,y that matched using cv2.circle
-                cv2.circle(frame, (int (x),int (y)), 5, (0, 255, 255), -1)
-                fout.write(str(x) + ' ' + str(y) + '\n')
-    
+            cv2.circle(frame, (int (x),int (y)), 5, (0, 255, 255), -1)            
         #frame = imutils.resize(frame, width=1000, height=800)
         cv2.imshow("Frame", frame)
-        k = cv2.waitKey(10000) & 0xFF
+        k = cv2.waitKey(1) & 0xFF
         if k == 27:  # esc key
             break
     cv2.destroyAllWindows()

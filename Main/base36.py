@@ -1,4 +1,4 @@
-
+"""Tool used to display base 36 number for better tracking of multiple beetles"""
 def base36encode(number, alphabet='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
     """Converts an integer to a base36 string."""
     base36 = ''

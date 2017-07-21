@@ -1,31 +1,19 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jul 19 13:56:23 2017
+"""This program was made to analyze video large1.mp4 by looking at each frame 
+and detecting all the beetles in that frame and their coordinates. However it 
+does not find the identies of beetles. This program uses multiple masks looking 
+for the different colors of the beetles. It also takes beetles that are too 
+close together and splits them up so they are not tracked as one beetle"""
 
-@author: jaredhaeme15
-"""
+# import the necessary packages
 import numpy as np
 import cv2
 import imutils
 
-def matches(xm, ym, xt, yt):
-    return ((xt-7) <= xm <= (xt+7)) and yt-7 <= ym <= yt+7
 
 
+
+#Returns a list of the coordinates of the beetles
 def find_beetles_by_color(frame):
-    lower_hsv_thresholdcr = np.array([0,250,250])
-    upper_hsv_thresholdcr = np.array([10,255,255])
-    gray = np.float32(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY))
-    dst = cv2.cornerHarris(gray,5,5,0.00000004)
-    frameWithRedCorners = np.copy(frame)
-    frameWithRedCorners[dst>0.0004*dst.max()]=[0,0,255]
-    hsv = cv2.cvtColor(frameWithRedCorners, cv2.COLOR_BGR2HSV)
-    crmask = cv2.inRange(hsv, lower_hsv_thresholdcr, upper_hsv_thresholdcr)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-    crmask2 = cv2.morphologyEx(crmask, cv2.MORPH_CLOSE, kernel, iterations=20)
-    crmask3 = cv2.morphologyEx(crmask2,cv2.MORPH_OPEN,kernel, iterations = 10)
-    cv2.imshow("crmask", crmask)
-    cv2.imshow("cr", frameWithRedCorners)
     #looks for middle part of beetles
     mask_mid = cv2.inRange(frame, np.array([10,10,120]),np.array([250,250,250]))
     #cv2.imshow("mask_mid", mask_mid)
@@ -43,42 +31,39 @@ def find_beetles_by_color(frame):
     mask_outline=cv2.inRange(frame, np.array([50,50,35]), np.array([100,105,150]))
     
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-    mask_dark_green2 = cv2.morphologyEx(mask_dark_green,cv2.MORPH_OPEN,kernel, iterations = 1)
+    #mask_dark_green2 = cv2.morphologyEx(mask_dark_green,cv2.MORPH_OPEN,kernel, iterations = 1)
     #cv2.imshow("erode", mask2)
-    mask_dark_green3 = cv2.dilate(mask_dark_green2, kernel, iterations=5)
+    mask_dark_green3 = cv2.dilate(mask_dark_green, kernel, iterations=5)
+    mask_sure_beetles=cv2.dilate(mask_dark_green, kernel, iterations=25)
     
     #Combines all the masks together
     combinedMask = cv2.bitwise_or(mask_dark_green3,thresh)
     combinedMask= cv2.bitwise_or(combinedMask, mask_light)
     combinedMask=cv2.bitwise_or(combinedMask, mask_mid)
-    #combinedMask=cv2.bitwise_or(combinedMask, crmask)
-    combinedMask=cv2.bitwise_or(combinedMask,mask_outline, mask=crmask3)
+    combinedMask=cv2.bitwise_or(combinedMask,mask_outline, mask=mask_sure_beetles)
     cv2.imshow("combinedMask", combinedMask)
-    closing = cv2.morphologyEx(combinedMask, cv2.MORPH_CLOSE, kernel, iterations=3)
-    opening = cv2.morphologyEx(closing,cv2.MORPH_OPEN,kernel, iterations = 2)
-
-    cv2.imshow("closing", opening)
+    closing = cv2.morphologyEx(combinedMask, cv2.MORPH_CLOSE, kernel, iterations=5)
+    opening = cv2.morphologyEx(closing,cv2.MORPH_OPEN,kernel, iterations = 5)
+    #cv2.imshow("closing", closing)
     # find contours in the mask 
     cnts = cv2.findContours(opening.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
     
     coords = []
     improvedContourList = []
-    count=0
+
     for c in cnts:
         ((x, y), radius) = cv2.minEnclosingCircle(c)          
-        if 35 < radius <= 100:
-            count+=1
+        if 41 < radius <= 150:
             improvedContourList.extend(splitMultipleBeetles(frame,c))
-            print (count)
         else:
             improvedContourList.append(c)
           
-            
+
     # process each contour in our contour list
     for c in improvedContourList:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
-        if 10 < radius <= 35:
+        if 6 < radius <= 41:
             coords.append((x,y))
             
     #mask_dark_green=imutils.resize(mask_dark_green, width=1080, height=810)
@@ -96,13 +81,10 @@ def find_beetles_by_color(frame):
 def splitMultipleBeetles(frame, bigContour):
    x,y,w,h = cv2.boundingRect(bigContour)
    cropped = frame[y:(y + h),x:(x + w)]
-   mask_dark_green = cv2.inRange(cropped, np.array([0,0,0]), np.array([255,37,255]))
    mask_mid = cv2.inRange(cropped, np.array([10,10,120]), np.array([250,250,250]))
-   combinedSmall=cv2.bitwise_or(mask_dark_green, mask_mid)
-   kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-   combinedSmall = cv2.morphologyEx(combinedSmall, cv2.MORPH_CLOSE, kernel, iterations=3)
-   combinedSmall = cv2.morphologyEx(combinedSmall,cv2.MORPH_OPEN,kernel, iterations = 2)
-   cnts = cv2.findContours(combinedSmall.copy(), cv2.RETR_EXTERNAL,
+   kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1,1))
+   eroded=cv2.erode(mask_mid, kernel, iterations=2)
+   cnts = cv2.findContours(eroded.copy(), cv2.RETR_EXTERNAL,
     cv2.CHAIN_APPROX_SIMPLE)[-2]
    for cnt in cnts:
        #((x, y), radius) = cv2.minEnclosingCircle(cnt)
@@ -110,6 +92,7 @@ def splitMultipleBeetles(frame, bigContour):
         #            (0, 255, 255), 2)
        cnt += np.array([x,y])
    return cnts   
+ 
 CHECK_FRAME_LIST = [1] + list(range(151,178+1,3))
 if __name__ == '__main__':
     frameFileName = r"H:\Summer Research 2017\Whirligig Beetle pictures and videos\large1.mp4"

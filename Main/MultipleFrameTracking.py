@@ -6,12 +6,13 @@ import cv2
 import numpy as np
 from collections import deque
 import imutils
+from pylab import *
 import MediumVideoSingleFrameDetection as md
 import LargeVideoSingleFrameDetection as ld
 
 from base36 import *
 
-filename="large1.mp4"
+filename="medium5.mp4"
 
 TRACKING_COLOR_LIST = [(240,163,255),(0,117,220),(153,63,0),(76,0,92),(25,25,25),(0,92,49),(43,206,72),(255,204,153),(128,128,128),(148,255,181),(143,124,0),(157,204,0),(194,0,136),(0,51,128),(255,164,5),(255,168,187),(66,102,0),(255,0,16),(94,241,242),(0,153,143),(224,255,102),(116,10,255),(153,0,0),(255,255,128),(255,255,0),(255,80,5)]
 
@@ -43,7 +44,7 @@ class Beetle:
         self.loc=startLoc
         self.history=[(startFrame-1,startLoc) ]
     def __str__(self):
-        return "Beetle %s {Frame %s: %s hist=%s}"%(self.ident,self.frameNum,self.loc,self.history)
+        return "Beetle %s {Frame %s: %s histLen=%s}"%(self.ident,self.frameNum,self.loc,len(self.history))
     def __repr__(self):
         return str(self)
     def updateCoord(self, frameNum, newLoc):
@@ -111,7 +112,7 @@ if __name__ == '__main__':
     archivedBeetleList = []
     #List of all betles that were tracked for a certain amount of frames
     beetlesWithLongHistories = set([])
-    
+
     frameNum = 0
     #Adds all beetles curently tracked by the single frame detection two active 
     #beetle list
@@ -151,7 +152,7 @@ if __name__ == '__main__':
             
             if len(beetle.history) > 200 and beetle not in beetlesWithLongHistories:
                 beetlesWithLongHistories.add(beetle)
-                print("# with long histories: %s"%len(beetlesWithLongHistories))
+                #print("# with long histories: %s"%len(beetlesWithLongHistories))
 
         # add new beetles for each detected blob in the current frame that wasn't matched to a beetle
         for newPt in curLocations:
@@ -160,12 +161,17 @@ if __name__ == '__main__':
             
         activeBeetleList = newActiveBeetleList
         
-    
-        #frame = imutils.resize(frame, width=1200, height=900)
         frame = imutils.resize(frame, width=1080, height=810)
         cv2.imshow("Frame", frame)
         k = cv2.waitKey(1) & 0xFF
         if k == 27:  # esc key
             break
+    xCoords = []
+    yCoords = []
+    for beetle in beetlesWithLongHistories:
+       beetlexs, beetleys = list(zip(*[pair[1] for pair in beetle.history[1:]]))
+       beetleys = -1*array(beetleys) #flip upside down to match video...
+       plot(beetlexs, beetleys)
+       plot(beetlexs[-1:],beetleys[-1:],'k.',marker="$"+base36encode(beetle.ident)+"$")
     cv2.destroyAllWindows()
     cap.release()

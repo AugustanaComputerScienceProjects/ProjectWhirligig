@@ -73,7 +73,7 @@ to stream
 ;               and patch-right-and-ahead 135 1 != nobody and not any? beetles-on patch-right-and-ahead 135 1
 ;               and patch-right-and-ahead 180 1 != nobody and not any? beetles-on patch-right-and-ahead 180 1)
 ;        [setxy xcor ycor + .08]
-        setxy xcor ycor + .8 * dt
+        setxy xcor ycor + .6 * dt
     ]
   ]
 end
@@ -90,7 +90,7 @@ end
 to setup-beetles
   create-beetles beetle-population [
 ;    set shape "bug"
-    setxy random-xcor / 2 random-ycor / 2
+    setxy random-xcor / 3 (random-ycor / 3) - world-height / 12
     set color black
     set hunger (random 100)
   ]
@@ -184,11 +184,11 @@ end
 GRAPHICS-WINDOW
 210
 10
-728
-549
-20
-20
-12.4
+647
+468
+30
+30
+7.0
 1
 10
 1
@@ -198,10 +198,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--20
-20
--20
-20
+-30
+30
+-30
+30
 1
 1
 1
@@ -742,11 +742,33 @@ NetLogo 5.3.1
     <enumeratedValueSet variable="stream?">
       <value value="true"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="vision">
-      <value value="2"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="show-hunger?">
       <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="dt">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment2" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="500"/>
+    <metric>sortedxs</metric>
+    <metric>sortedys</metric>
+    <enumeratedValueSet variable="turn-back-distance">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="beetle-population">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="beetle-gain-from-food">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="add-food-chance">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="stream?">
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="dt">
       <value value="0.1"/>
